@@ -67,5 +67,17 @@ pipeline{
                 }
             }
         }
+        
+        stage('deploy to k') {
+            steps {
+                script {
+                    withKubeConfig(caCertificate: '', clusterName: '', contextName: '', credentialsId: 'kubeconfig_file', namespace: '', serverUrl: '') {
+                        dir('kubernetes/') {
+			                sh 'helm upgrade --install --set image.repository="10.162.0.6:8083/springapp" --set image.tag="${VERSION}" myjavaapp myapp/ '
+			            }
+		            }			 
+                }
+            }
+        }
     }
 }
