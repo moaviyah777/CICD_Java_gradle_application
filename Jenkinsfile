@@ -68,14 +68,23 @@ pipeline{
             }
         }
         
+	stage('approval') {
+		steps {
+			script {
+				timeout(time: 1, unit: 'DAYS') {
+   					 input message: 'do u wan to deploy of kube cluster?', ok: 'yes go deploy', submitter: 'admin'
+				}
+			}
+		}	
+	}
         stage('deploy to k') {
             steps {
                 script {
                     withKubeConfig(caCertificate: '', clusterName: '', contextName: '', credentialsId: 'kubeconfig_file', namespace: '', serverUrl: '') {
                         dir('kubernetes/') {
 			                sh 'helm upgrade --install --set image.repository="10.162.0.6:8083/springapp" --set image.tag="${VERSION}" myjavaapp myapp/ '
-			            }
-		            }			 
+			}
+		    }			 
                 }
             }
         }
